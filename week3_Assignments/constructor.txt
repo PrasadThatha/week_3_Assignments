@@ -1,0 +1,178 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_OOPS_CONSTRUCTOR
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_OOPS_CONSTRUCTOR.
+" # raising Expections
+**
+**
+**CLASS c1 DEFINITION.
+**PUBLIC SECTION.
+**data : lv_in TYPE  i.
+**METHODS m1 IMPORTING input1 type i
+**                     input2 TYPE i
+**           EXCEPTIONS e1 .
+**
+**
+**ENDCLASS.
+**
+**class c1 IMPLEMENTATION.
+**  METHOD m1.
+**    if input1 gt 30 and input2 gt 30.
+**      WRITE /: 'two values are valid.'.
+**    else.
+**      MESSAGE e001(zprasad_ust_msg) RAISING e1.
+**    ENDIF.
+**  endmethod.
+**  endclass.
+**
+**  START-OF-SELECTION .
+**  data : i_obj TYPE REF TO c1.
+**
+**  CREATE OBJECt i_obj.
+**  PARAMETERS :lv_var type i,lv_var2 type i.
+**
+**  i_obj->m1(
+**    EXPORTING
+**      input1 = lv_var
+**      input2 = lv_var2
+**    EXCEPTIONS
+**      e1     = 1
+**      others = 2
+**  ).
+**  IF SY-SUBRC <> 0.
+**   MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+**     WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+**  ENDIF.
+
+
+
+"" now Constrcutor...
+
+*CLASS c1 DEFINITION.
+*  PUBLIC SECTION.
+*  METHODs constructor.
+*ENDCLASS.
+*
+*
+*CLASS c1 IMPLEMENTATION.
+*  METHOD constructor.
+*    write 'this is consctor.'.
+*   ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*DATA : i_obj TYPE REF TO c1.
+*CREATE OBJECT i_obj.           " when we tried to create an object then instance consctor will be called automatically...
+
+
+
+" # INSTANCE CONSTRUCTOR ONLY HAVE IMPORT PARAMETER
+
+
+
+*CLASS c1 DEFINITION.
+*  PUBLIC SECTION.
+*  METHODs constructor IMPORTING TODAY_DATE TYPE D.
+*ENDCLASS.
+*
+*CLASS C1 IMPLEMENTATION.
+*   METHOD CONSTRUCTOR.
+*     WRITE : 'TODAY DATE IS ',TODAY_DATE DD/MM/YYYY .
+*    ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*DATA : I_OBJ TYPE REF TO C1.
+*CREATE OBJECT I_OBJ EXPORTING TODAY_DATE = SY-DATUM.   " ONLY THE STATEMENT EXTRA HERE IS DURING OBJ CREATION THE EXPORTING KEYWORD...
+
+
+*
+**# INSTANCE CONSTRUCTOR WILL HAVE EXCEPTIONS AS ARGUMENT
+*
+*CLASS c1 DEFINITION.
+*  PUBLIC SECTION.
+*  METHODs constructor IMPORTING TODAY_DATE TYPE D
+*                       EXCEPTIONS E1.
+*ENDCLASS.
+*
+*CLASS C1 IMPLEMENTATION.
+*   METHOD CONSTRUCTOR.
+**     WRITE : 'TODAY DATE IS ',TODAY_DATE DD/MM/YYYY .
+*     IF SY-DATUM = '05/11/2024'.
+**       MESSAGE E001(ZPRASAD_UST_MSG).
+*       WRITE : / 'TODAYS DATE'.
+*       ELSE.
+*         RAISE E1.
+*     ENDIF.
+*    ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*DATA : I_OBJ TYPE REF TO C1.
+*CREATE OBJECT I_OBJ EXPORTING TODAY_DATE = SY-DATUM
+*                    EXCEPTIONS E1 = 4.
+*
+*IF SY-SUBRC = 4.
+*  WRITE : / 'EXCEPTION RAISED'.
+*  ENDIF.
+
+
+
+
+
+"""           STATIC - CONSTRUCTOR.
+
+*
+*CLASS c1 DEFINITION.
+*  PUBLIC SECTION.
+*  CLASS-METHODs class_constructor.
+*  METHODs constructor.
+*  CLASS-data st_input type i.
+*ENDCLASS.
+*
+*
+*class c1 IMPLEMENTATION.
+* METHOD class_constructor.
+*   WRITE / 'static / class constrctor is called..'.
+*  ENDMETHOD.
+*  METHOD CONSTRUCTOR.
+*    WRITE / 'INSTANCE constrctor is called..'.
+*  ENDMETHOD.
+*
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*data  : i_obj TYPE REF TO c1.
+**CREATE OBJECT i_obj. " WHEN OBJ IS CREATED BEFORE INSTANCE STATIC CONST WILL BE CALLED AND THEN INSTANCE CONSTRCTOR WILL BE CALLED.
+*
+**write i_obj->st_input.
+*WRITE C1=>st_input.    " NO OBJ ALSO WHEN WE TRIED TO ACCESS WITHN CLASS  NAME ALSO IT WILL WORK.
+
+
+
+
+"                           ME KEYWORD
+"               ``````````````````````````````````````
+
+CLASS c1 DEFINITION.
+  PUBLIC SECTION.
+ METHODs constructor.
+
+data st_input type i VALUE 2000
+      .
+ENDCLASS.
+
+CLASS C1 IMPLEMENTATION.
+   METHOD constructor.                       " HERE IT IS instance SO ME IS WORKING
+   WRITE : / 'THOIS IS CONSTRCTOR'.          " IF IT IS CLASS ATTR OR CLASS METHODS IT IS NOT WORKING.........
+   DATA ST_INPUT TYPE I VALUE 1000.
+   WRITE : / ST_INPUT ,
+             ME->ST_INPUT.
+   ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+DATA : I_OBJ TYPE REF TO C1.
+CREATE OBJECT I_OBJ.

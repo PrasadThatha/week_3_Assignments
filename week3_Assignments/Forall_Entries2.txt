@@ -1,0 +1,69 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_FORALL_ASSIGNMENT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_FORALL_ASSIGNMENT.
+INCLUDE zdefinations11_top.
+
+data : lv_vbeln type vbeln_va.
+SELECT-OPTIONS s_vbeln for lv_vbeln.
+
+START-OF-SELECTION.
+
+SELECT VBELN ERDAT eRZET ERNAM
+  into TABLE lt_tab1
+  from vbak
+  where vbeln in s_vbeln.
+
+if not lt_tab1[] is INITIAL.
+  SELECT VBELN POSNR MATNR MATWA
+    INTO TABLE lt_tab2
+    from vbap
+    FOR ALL ENTRIES IN lt_tab1
+    WHERE vbeln eq lt_tab1-vbeln.
+
+  DELEte ADJACENT DUPLICATES FROM lt_tab1 COMPARING vbeln.
+    SORT lt_tab2 by vbeln.
+   loop at lt_tab1 into wa_tab1.
+     READ TABLE lt_tab2 into wa_tab2 WITH  KEY vbeln = wa_tab1-vbeln BINARY SEARCH.
+      if sy-subrc eq 0.
+     MOVE :wa_tab1-vbeln TO wa_final-vbeln,
+        wa_tab1-erdat TO wa_final-erdat,
+        wa_tab1-erzet TO wa_final-erzet,
+        wa_tab1-ernam TO wa_final-ernam,
+        wa_tab2-posnr TO wa_final-posnr,
+        wa_tab2-matnr TO wa_final-matnr,
+        wa_tab2-matwa TO wa_final-matwa.
+        APPEND wa_final TO lt_final.
+        CLEAR wa_final.
+
+      else.
+        CONTINUE.
+      ENDIF.
+    ENDLOOP.
+
+
+         LOOP AT lt_final INTO wa_final.
+      WRITE : /
+      wa_final-vbeln,
+      wa_final-erdat,
+      wa_final-erzet,
+      wa_final-ernam,
+      wa_final-posnr,
+      wa_final-matnr,
+      wa_final-matwa.
+    ENDLOOP.
+
+ELSE.
+  WRITE : 'No recotds found in vbak table.'.
+ENDIF.
+
+
+
+""" for all entries in lt_tab1
+"" where vbeln eq lt_tab1-vbeln
+"" delete adjacent duplicates form lt_tab1  comparing vbeln
+"" sort lt_tab2 by vbeln
+"" loop at lt_tab1 into wa_tab2
+"" read table lt_tab2 into wa_tab2 with key ref vbeln = lt_tab2 vbeln binary search.

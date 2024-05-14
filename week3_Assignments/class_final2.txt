@@ -1,0 +1,37 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_FINAL_CLASS_EX1
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_FINAL_CLASS_EX1.
+
+class c1 DEFINITION.
+  PUBLIC SECTION.
+  METHODs :
+  m1 FINAL,m2.
+ENDCLASS.
+
+CLASS c1 IMPLEMENTATION.
+  METHOD m1.
+    WRITE : 'this is final method ou cannot change it'.
+  ENDMETHOD.
+  METHOD m2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS c2 DEFINITION INHERITING FROM c1.
+  PUBLIC SECTION.
+  METHODs m2 REDEFINITION.                    "redefination of m1 method is not posiible coz it is final.
+ENDCLASS.
+
+CLASS c2 IMPLEMENTATION.
+  METHOD m2.
+    WRITE 'm2'.
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+data: i_obj type ref to c2.
+CREATE OBJECT i_obj.
+i_obj->m1( ).
+i_obj->m2( ).

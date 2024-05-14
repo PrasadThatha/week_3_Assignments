@@ -1,0 +1,23 @@
+
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_FINAL_CLASS
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_FINAL_CLASS.
+class  c1 DEFINITION FINAL.
+  PUBLIC SECTION.
+  methods m1 .
+ENDCLASS.
+CLASS c1 IMPLEMENTATION.
+  METHOD m1.
+    WRITE 'this is m1 method'.
+  ENDMETHOD.
+ENDCLASS.
+
+*class c2 DEFINITION INHERITING FROM c1.
+* ENDCLASS.                                   " not possible coz c1 is a final class
+START-OF-SELECTION.
+data: i_obj TYPE REF TO c1.
+CREATE OBJECT i_obj.
+i_obj->m1( ).

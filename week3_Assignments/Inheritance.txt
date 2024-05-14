@@ -1,0 +1,90 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_OOPS_MAIN
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_INHERITANCE.
+
+CLASS c1 DEFINITION.
+  PUBLIC SECTION.
+  data : num type i VALUE 10.
+  METHODS m1.
+  PROTECTED SECTION.
+  data : num2 type i VALUE 8000.
+ENDCLASS.
+
+class  c1 IMPLEMENTATION.
+  METHOD m1.
+    WRITE  / 'this is method m1 in super class'.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS c2 DEFINITION INHERITING FROM c1.
+  PUBLIC SECTION.
+  data : num3 TYPE i VALUE 2000.
+  METHODs m3.
+ENDCLASS.
+
+CLASS c2 IMPLEMENTATION.
+  METHOD m3.
+    WRITE / 'this is method m3 from the sub class'.
+    WRITE NUM2.                       " HERE NUM2 IS IN PROTECTD SECTION WE CAN USE IT BUT WE CAN'T ACCESS THROUGH OBJ OF SUB CLASS.
+
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+data: i_obj TYPE REF TO c2.
+CREATE OBJECT i_obj.
+WRITE : /
+i_obj->num,
+i_obj->num3.
+
+i_obj->m1( ).
+i_obj->m3( ).
+*_OBJ->NUM2
+
+
+
+*
+*CLASS c1 DEFINITION.
+*  PUBLIC SECTION.
+*  data: num TYPE i VALUE 100.
+*  METHODs : m1 , m2.
+*ENDCLASS.
+*CLASS c1 IMPLEMENTATION.
+*  METHOD m1.
+*    WRITE 'this is method m1'.
+*   ENDMETHOD.
+* METHOD M2.
+*   WRITE 'THIS IS METHOS=D M2'.
+*  ENDMETHOD.
+*ENDCLASS.
+*
+*CLASS C2 DEFINITION INHERITING FROM C1.
+*  PUBLIC SECTION.
+*  DATA : NUM2 TYPE I VALUE 200.
+*  METHODS : M1 REDEFINITION, M2 REDEFINITION,M3.
+*
+*ENDCLASS.
+*
+*CLASS C2 IMPLEMENTATION.
+*  METHOD M1.
+*    WRITE  /
+*    'OVERRIDEN M1'.
+*   ENDMETHOD.
+*  METHOD M2 .
+*    WRITE /  'OVERIDEN M2'.
+*   ENDMETHOD.
+*   METHOD M3.
+*    WRITE / 'NEW METHOD'.
+*    CALL METHOD : M1, M2.
+*
+*   ENDMETHOD.
+*ENDCLASS.
+*
+*START-OF-SELECTION.
+*DATA  I_OBJ TYPE REF TO C2.
+*CREATE OBJECT I_OBJ.
+*
+*I_OBJ->m3( ).

@@ -1,0 +1,61 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_INHERITANCE_EX2
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_INHERITANCE_EX2.
+CLASS employee DEFINITION.
+  PUBLIC SECTION.
+  methods  : set_attr IMPORTING EMP_name type string EMP_id type C,
+            display_attr,CONSTRUCTOR.
+  PRIVATE SECTION.
+  DATA : NAME TYPE STRING,ID TYPE C.
+ENDCLASS.
+
+class employee IMPLEMENTATION.
+  methOD SET_ATTR.
+    NAME = EMP_NAME .
+    ID = EMP_ID.
+  ENDMETHOD.
+   METHOD DISPLAY_ATTR.
+     WRITE : /
+     'EMPLOYEE ID ' , NAME , 'EMPLOYEE ID' ,ID.
+  ENDMETHOD.
+  METHOD CONSTRUCTOR.
+    WRITE 'IM THE CON'.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS NEW_EMP DEFINITION INHERITING FROM EMPLOYEE.
+  PUBLIC SECTION.
+  METHODS :SET_ATTR REDEFINITION,
+           DISPLAY_ATTR REDEFINITION,CONSTRUCTOR.
+ENDCLASS.
+
+CLASS NEW_EMP IMPLEMENTATION.
+  METHOD SET_ATTR.
+    CALL METHOD SUPER->set_attr
+      EXPORTING
+        emp_name = EMP_NAME
+        emp_id   = EMP_ID
+      .
+   ENDMETHOD.
+   METHOD DISPLAY_ATTR.
+      CALL METHOD SUPER->display_attr.
+   ENDMETHOD.
+   METHOD CONSTRUCTOR.
+     WRITE 'SUB-CLASS' .
+      SUPER->constructor( ). " THIS STATEMENT IS NEEDED.
+   ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+
+DATA : I_OBJ TYPE REF TO NEW_EMP .
+CREATE OBJECT I_OBJ.
+
+I_OBJ->set_attr(
+  emp_name = 'PTRASAD'
+  emp_id   = '280465'
+).
+I_OBJ->display_attr( ).

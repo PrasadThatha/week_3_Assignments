@@ -1,0 +1,51 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_INHERITANCE_EX1
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_INHERITANCE_EX1.
+include zinheritance_ex. "VBAK STRT WA_AREA IT_TAB
+
+
+CLASS c1 DEFINITION.
+  PUBLIC SECTION.
+  data : vbeln type VBELN_VA.
+  methods get_data IMPORTING S_VBELN1 TYPE VBELN_VA
+                              S_VBELN2 TYPE VBELN_VA
+                 .  " IMPORTING S_VBELN
+ENDclass.
+
+CLASS c1 IMPLEMENTATION.
+  method get_data.
+
+ DATA :LV_VBELN1 TYPE VBELN_VA. " WHY SELECT OPTIONS AND PARAMETRS ARE NOT WORKING HERE ?
+    select  ERDAT ERZET ERNAM
+      into TABLE lt_tab
+      from vbak
+     where vbeln BETWEEN S_VBELN1 AND S_VBELN2 .
+  endmethod.
+endclass.
+
+class c2 DEFINITION INHERITING FROM c1.
+  PUBLIC SECTION.
+  METHODs display_data.
+ENDCLASS.
+class c2 IMPLEMENTATION.
+  METHOD display_data.              " LT_TAB VALUES INHERITED INTO WA_TAB
+    loop at lt_tab INto wa_tab.
+      WRITE :/
+      wa_tab-erdat,wa_tab-erzet,wa_tab-ernam.
+    ENDLOOP.
+   ENDMETHOD.
+ ENDCLASS.
+
+ START-OF-SELECTION.
+ data : i_obj TYPE REF TO C2.     " SUB CLASS OBJ REF
+ TABLES VBAK.
+SELECT-OPTIONS LV_VBELN FOR  VBAK-VBELN.
+ CREATE OBJECT I_OBJ.
+I_OBJ->get_data(
+  s_vbeln1 = LV_VBELN-LOW
+  s_vbeln2 = LV_VBELN-HIGH
+).
+I_OBJ->display_data( ).  " GETTING TABLE OF DATA DATA

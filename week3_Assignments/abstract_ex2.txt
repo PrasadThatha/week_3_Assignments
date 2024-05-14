@@ -1,0 +1,49 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_ABSTRATION_EX1
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_ABSTRATION_EX1.
+INCLUDE ZINHERITANCE_EX.
+
+CLASS C1 DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+  METHODS :
+    "get_data IMPORTING s_vbeln1 type vbeln_va s_vbeln2 TYPE vbeln_va ABSTRACT ,
+    GET_DATA ABSTRACT,
+    display_data .
+
+ENDCLASS.
+
+CLASS c1 IMPLEMENTATION .
+  METHOD display_data .
+    loop at lt_tab INto wa_tab.
+      WRITE :/
+      wa_tab-erdat,wa_tab-erzet,wa_tab-ernam.
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS c2 DEFINITION INHERITING FROM c1.
+  PUBLIC SECTION.
+  METHODs :
+ " get_data IMPORTING s_vbeln1 type vbeln_va s_vbeln2 TYPE vbeln_va
+  get_data  REDEFINITION .
+ENDCLASS.
+
+CLASS c2 IMPLEMENTATION.
+  METHOD get_data.
+     select  ERDAT ERZET ERNAM
+      into TABLE lt_tab
+      from vbak.
+     "where vbeln BETWEEN S_VBELN1 AND S_VBELN2 .
+  ENDmethod.
+ENDCLASS.
+
+START-OF-SELECTION.
+DATA : i_obj TYPE REF TO c1.
+*CREATE OBJECT i_obj.            " cannot be instanciated
+data : i_obj2 TYPE REF TO c2.
+CREATE OBJECT i_obj2.
+i_obj2->get_data( ).
+i_obj2->display_data( ).

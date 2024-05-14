@@ -1,0 +1,61 @@
+
+REPORT zprasad_forallentries.
+INCLUDE zdefinations11_top.
+
+
+TABLES vbak.
+SELECT-OPTIONS s_vbeln FOR vbak-vbeln.
+
+START-OF-SELECTION .
+
+  SELECT vbeln erdat erzet ernam
+    INTO TABLE lt_tab1
+    FROM vbak
+    WHERE vbeln IN s_vbeln.
+
+  IF NOT lt_tab1[] IS INITIAL.
+
+    SELECT vbeln posnr matnr matwa
+      INTO TABLE lt_tab2
+      FROM vbap
+      FOR ALL ENTRIES IN lt_tab1
+      WHERE vbeln EQ lt_tab1-vbeln.
+
+    DELETE ADJACENT DUPLICATES FROM lt_tab1 COMPARING vbeln.
+    SORT lt_tab2 BY vbeln.
+    LOOP AT lt_tab1 INTO wa_tab1.
+      READ TABLE lt_tab2 INTO wa_tab2 WITH KEY vbeln = wa_tab1-vbeln BINARY SEARCH.
+      IF sy-subrc EQ 0.
+
+        MOVE :wa_tab1-vbeln TO wa_final-vbeln,
+        wa_tab1-erdat TO wa_final-erdat,
+        wa_tab1-erzet TO wa_final-erzet,
+        wa_tab1-ernam TO wa_final-ernam,
+        wa_tab2-posnr TO wa_final-posnr,
+        wa_tab2-matnr TO wa_final-matnr,
+        wa_tab2-matwa TO wa_final-matwa.
+        APPEND wa_final TO lt_final.
+        CLEAR wa_final.
+
+      ELSE.
+        CONTINUE.
+      ENDIF.
+
+    ENDLOOP.
+    LOOP AT lt_final INTO wa_final.
+      WRITE : /
+      wa_final-vbeln,
+      wa_final-erdat,
+      wa_final-erzet,
+      wa_final-ernam,
+      wa_final-posnr,
+      wa_final-matnr,
+      wa_final-matwa.
+    ENDLOOP.
+
+
+
+
+  ELSE.
+    WRITE : 'No records found in frist table '.
+  ENDIF.

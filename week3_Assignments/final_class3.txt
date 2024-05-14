@@ -1,0 +1,58 @@
+
+*&---------------------------------------------------------------------*
+*& Report ZPRASAD_FINAL_CLASS_EX2
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPRASAD_FINAL_CLASS_EX2.
+
+class ust DEFINITION.
+  PUBLIC SECTION.
+  METHODS :
+  welcome_method FINAL,
+  set_attr IMPORTING emp_name type c emp_id type c,
+  get_attr.
+  PRIVATE SECTION.
+  data: no(20) ,id(20).
+ENDCLASS.
+
+class ust IMPLEMENTATION.
+  METHOD welcome_method.
+    WRITE : /'welcome to ust family...!!!!!'.
+  ENDMETHOD.
+  METHOD set_attr.
+    no = emp_name.
+    id = emp_id.
+   ENDMETHOD.
+  METHOD get_attr.
+    WRITE : 'employee' ,20 no ,40 id.
+    ENDMETHOD.
+ENDCLASS.
+
+CLASS ust_hyd DEFINITION INHERITING FROM ust.
+  PUBLIC SECTION.
+methods : set_attr REDEFINITION,get_attr REDEFINITION.
+
+ENDCLASS.
+
+CLASS ust_hyd IMPLEMENTATION.
+  METHOD set_attr.
+    super->set_attr(
+      emp_name = emp_name
+      emp_id   = emp_id
+    ).
+  ENDMETHOD.
+  METHOD get_attr.
+    super->get_attr( ).
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+data: i_obj TYPE REF TO ust_hyd.
+CREATE OBJECT i_obj.
+i_obj->welcome_method( ).
+i_obj->set_attr(
+  emp_name = 'prasad'
+  emp_id   = '280465'
+).
+i_obj->get_attr( ).
